@@ -27,7 +27,8 @@ public class TetrisGame extends JFrame implements KeyListener, ActionListener, S
 
 	Tetromino active;
 	Tetromino swapped;
-
+	
+	int combo;
 	int nextone;
 	int score;
 
@@ -334,7 +335,7 @@ public class TetrisGame extends JFrame implements KeyListener, ActionListener, S
 	 */
 	public void checkForClear()
 	{
-		int points = 0;
+		int lineMultiplier = 0;
 		swappedonce = false;
 
 		for (int x=0; x<20; x++)
@@ -346,12 +347,19 @@ public class TetrisGame extends JFrame implements KeyListener, ActionListener, S
 				if (board[y][x] > 0) count++;
 			}
 
-			if (count==10)
-				points+=clearRow(x);
+			if (count==10){
+				lineMultiplier+=1;
+				clearRow(x);
+			}
 		}
-
-		if (points == 4) points = 10;
-		score += points*100;
+		if(lineMultiplier > 0){
+			combo++;
+		
+		}
+		else 
+			combo = 0;
+		if (lineMultiplier == 4) lineMultiplier = 10;
+		score += lineMultiplier*100*combo;
 		setTitle("Score: "+score);
 
 
@@ -363,22 +371,26 @@ public class TetrisGame extends JFrame implements KeyListener, ActionListener, S
 	 * @param row	row to be cleared
 	 * @return
 	 */
-	public int clearRow(int row)
+	public void clearRow(int row)
 	{
+		int mario = (600 - (score/1000)*40);
+		
+		if(mario < 50)
+			mario = 50;
+		
 		for (int x=row; x>0; x--)
-		{
 			for (int y=0; y<10; y++)
 				board[y][x] = board[y][x-1];
-		}
+		
 
 		// clear the top row too
 		for (int x=0; x<10; x++)
 			board[x][0] = 0;
 
-		if (500 - (score/500)*50 != timer.getDelay())
-			timer.setDelay(500 - (score/500)*50);
+		//if( mario != timer.getDelay())
+			timer.setDelay(mario);
 
-		return 1;
+		
 	}
 
 	/**
